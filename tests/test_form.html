@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE html
+   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" >
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>
+      Example for Validator
+    </title>
+    <style type="text/css" xml:space="preserve">
+BODY, P,TD{ font-family: Arial,Verdana,Helvetica, sans-serif; font-size: 10pt }
+A{font-family: Arial,Verdana,Helvetica, sans-serif;}
+B {	font-family : Arial, Helvetica, sans-serif;	font-size : 12px;	font-weight : bold;}
+.error_strings{ font-family:Verdana; font-size:14px; color:#660000;}
+</style>
+
+<script type="text/javascript" src="jquery-1.6.1.min.js"></script>
+<script type="text/javascript" src="mystuff.js"></script>
+<!-- <script language="JavaScript" src="gen_validatorv4.js" type="text/javascript" xml:space="preserve"></script> -->
+<!-- <script type="text/javascript" src="formvalidator.js"></script> -->
+<script type="text/javascript" src="formvalidator-simple.js"></script>
+
+  </head>
+  <body>
+    <form onSubmit="return validate()" name="myform" id="myform">
+      <table cellspacing="2" cellpadding="2" border="0">
+        <tr>
+          <td align="right">
+            First Name
+          </td>
+          <td>
+            <input type="text" name="FirstName" id="firstname" />
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            Last Name
+          </td>
+          <td>
+            <input type="text" name="LastName" id="lastname" />
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            EMail
+          </td>
+          <td>
+			<div id="lulz">
+				<div>
+            		<input type="text" name="Email" id="email" value="dme@luldfez.com" />
+				</div>
+			</div>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            Phone
+          </td>
+          <td>
+            <input type="text" name="Phone" />
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            Address
+          </td>
+          <td>
+            <textarea cols="20" rows="5" name="Address"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            Country
+          </td>
+          <td>
+            <select name="Country">
+            <option value="000" selected="selected">
+              [choose yours]
+            </option>
+            <option value="008">
+              Albania
+            </option>
+            <option value="012">
+              Algeria
+            </option>
+            <option value="016">
+              American Samoa
+            </option>
+            <option value="020">
+              Andorra
+            </option>
+            <option value="024">
+              Angola
+            </option>
+            <option value="660">
+              Anguilla
+            </option>
+            <option value="010">
+              Antarctica
+            </option>
+            <option value="028">
+              Antigua And Barbuda
+            </option>
+            <option value="032">
+              Argentina
+            </option>
+            <option value="051">
+              Armenia
+            </option>
+            <option value="533">
+              Aruba
+            </option></select>
+          </td>
+        </tr>
+        <tr>
+          <td align="right"></td>
+          <td>
+            <div id="myform_errorloc" class="error_strings">
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td align="right"></td>
+          <td>
+            <input type="submit" value="Submit" />
+          </td>
+        </tr>
+      </table>
+    </form>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			init();
+		});
+	</script>
+  </body>
+</html>
