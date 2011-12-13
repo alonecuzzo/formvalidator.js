@@ -25,7 +25,9 @@ function validate() {
 
 function addit(){
 	var first_name_field = $("#firstname");
-	first_name_field.attr("onkeyup", "return key_up_listener(this, false, false, 4)");
+	first_name_field.attr("onkeyup", "return key_up_listener(this, 4)");
+//	just do this using jquery http://api.jquery.com/keypress/
+	first_name_field.attr("onkeypress", "return key_down_listener(this, true, false)");
 }
 
 function add_validation(field, type, max_len) {
@@ -46,16 +48,22 @@ function ValidationRule(field, desc) {
 	
 }
 
-function key_up_listener(field, isNumeric, isAlpha, max_len) {
+function key_down_listener(field, isNumericOnly, isAlphaOnly) {
+	if(isNumericOnly) {			
+		if(!limit_field_to_num(field)){
+			return false;
+		} else {
+			return true;
+		}
+	} else if(isAlphaOnly) {
+		
+	}
+} 
+
+function key_up_listener(field, max_len) {
 	var mLen = max_len;
 	if(!field) {
 		alert("field is invalid");
-	}
-	
-	if(isNumeric) {
-		limit_field_to_num(field);
-	} else if(isAlpha) {
-		limit_field_to_alpha(field);
 	}
 	
 	if(mLen>0) {
@@ -67,8 +75,13 @@ function limit_field_to_alpha(field) {
 	
 }
 
-function limit_field_to_num(field) {
-	
+function limit_field_to_num(e) {
+	var unicode = e.charCode ? e.charCode : e.keyCode;
+	alert("unicode: " + unicode)
+	if (unicode!=8){ //if the key isn't the backspace key (which we should allow)
+		if (unicode<48||unicode>57) //if not a number
+			return false;
+	} //disable key press
 }
 
 function limit_field_length(field, max_len) {
