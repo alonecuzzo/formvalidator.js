@@ -37,16 +37,46 @@ function addit(){
 	});
 }
 
+// sets alpha/alpha character limits
+function set_char_limit(field, is_alpha, is_num) {
+	if(is_num) {
+		field.keypress(function(e){			
+			var unicode = e.charCode ? e.charCode : e.keyCode;
+			if (unicode!=8){ //if the key isn't the backspace key (which we should allow)
+				if (unicode<48||unicode>57) //if not a number
+					return false;
+			} //disable key press
+		});
+	} else if(is_alpha) {
+		field.keypress(function(evt) {
+			 evt = evt || window.event;
+			 var charCode = evt.keyCode || evt.which;
+			 var charStr = String.fromCharCode(charCode);
+			 return /[a-z]/i.test(charStr);
+		});
+	}
+}
+
 function add_validation(field, type, max_len) {
 	if(!field) {
 		alert("invalid field");
 	}
-	
+	if(max_len) {
+		var mLen = max_len;
+	}
+//	set_char_limit(field, is_alpha, is_num);
 	switch(type) {
 		case "max_len":
-			
+	                field.attr("onkeyup", "return key_up_listener(this, " + max_len + ")");
 			break;
-			
+
+		case "is_alpha":
+			set_char_limit(field, true, false);
+			break;
+
+		case "is_num":
+			set_char_limit(field, false, true);
+			break;
 	}
 }
 
