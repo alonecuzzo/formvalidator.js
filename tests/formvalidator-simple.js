@@ -1,4 +1,6 @@
 function Validator(form_id) {
+	//disable submit
+	$('input[type=submit]').attr('disabled', 'disabled');
 	//onSubmit="return validate()" 
 	this.formToValidate = $("#"+form_id);
 	this.emailArray = [];
