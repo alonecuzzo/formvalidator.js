@@ -140,7 +140,14 @@ function validate_email_field(field, isReq) {
 		{
 			//alert("field is not valid email: " +field.attr('id'));
 			field.add().css("border", "1px solid #f00");
-			$("<div class='error'>email is invalid</div>").appendTo(field.parent().parent());
+			if(field.parent().parent().find(".error").val()==undefined){
+				$("<div class='error'>not a valid email</div>").appendTo(field.parent().parent());
+			} else {
+				field.parent().parent().find(".error").show();
+			}
+		} else {
+			field.add().css("border", "");
+			field.parent().parent().find(".error").hide();
 		}
 	} else {
 		if(field.val().length>=1){
@@ -148,9 +155,14 @@ function validate_email_field(field, isReq) {
 			{
 				field.add().css("border", "1px solid #f00");
 				
-				$("<div class='error'>email is invalid</div>").appendTo(field.parent().parent());
+				if(field.parent().parent().find(".error").val()==undefined){
+					$("<div class='error'>not a valid email</div>").appendTo(field.parent().parent());
+				} else {
+					field.parent().parent().find(".error").show();
+				}
 			} else {
 				field.add().css("border", "");
+				field.parent().parent().find(".error").hide();
 			}
 		}
 	}
