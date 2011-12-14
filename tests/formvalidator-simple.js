@@ -3,8 +3,12 @@ function Validator(form_id) {
 	this.formToValidate = $("#"+form_id);
 	this.emailArray = [];
 	this.comboboxArray = [];
+	this.requiredArray = [];
 	this.addValidation = add_validation;
 	this.setAlphaNumeric = set_char_alphanumeric;
+	
+	this.validateRequiredField = validate_required_field;
+	this.validateEmailField = validate_email_field;
 	
 	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
 	//for the return function
@@ -57,7 +61,7 @@ function set_char_alphanumeric(field, additional_char) {
 		evt = evt || window.event;
 		var charCode = evt.keyCode || evt.which;
 		var charStr = String.fromCharCode(charCode);
-		return /^([a-zA-Z0-9_-]+)$/.test(charStr);
+		return /^([\.a-zA-Z0-9-]+)$/.test(charStr);
 	});
 }
 
@@ -74,10 +78,10 @@ function add_validation(field, type, max_len) {
 	if(max_len) {
 		var mLen = max_len;
 	}
-//	set_char_limit(field, is_alpha, is_num);
+	var validator_instance = this;
 	switch(type) {
 		case "max_len":
-	                field.attr("onkeyup", "return key_up_listener(this, " + max_len + ")");
+	          field.attr("onkeyup", "return key_up_listener(this, " + max_len + ")");
 			break;
 
 		case "is_alpha":
@@ -89,13 +93,66 @@ function add_validation(field, type, max_len) {
 			break;
 			
 		case "email":
-			//just push the name of the field
-			this.emailArray.push(field.attr("id"));
+			field.blur(function() {
+				validator_instance.validateEmailField($(this), false);
+			});
 			break;
 			
 		case "combobox":
 			this.comboboxArray.push(field.attr("id"));
 			break;
+		
+		case "required":
+		//	var validator_instance = this;
+			field.blur(function() {
+				validator_instance.validateRequiredField($(this));
+			});
+			break;
+		
+		case "requiredEmail":
+			field.blur(function() {
+				validator_instance.validateEmailField($(this), true);
+			});
+			break;
+	}
+}
+
+function validate_required_field(field) {
+	//check required stuff
+	if(!validate_min_length(field, 1))
+	{
+		field.add().css("border", "1px solid #f00");
+		if(field.parent().parent().find(".error").val()==undefined){
+			$("<div class='error'>this is a required field</div>").appendTo(field.parent().parent());
+		} else {
+			field.parent().parent().find(".error").show();
+		}
+	} else {
+		field.add().css("border", "");
+		field.parent().parent().find(".error").hide();
+	}
+}
+
+function validate_email_field(field, isReq) {
+	var is_req = isReq;
+	if(is_req == "true") {
+		if(!validateEmail(field.val()))
+		{
+			//alert("field is not valid email: " +field.attr('id'));
+			field.add().css("border", "1px solid #f00");
+			$("<div class='error'>email is invalid</div>").appendTo(field.parent().parent());
+		}
+	} else {
+		if(field.val().length>=1){
+			if(!validateEmail(field.val()))
+			{
+				field.add().css("border", "1px solid #f00");
+				
+				$("<div class='error'>email is invalid</div>").appendTo(field.parent().parent());
+			} else {
+				field.add().css("border", "");
+			}
+		}
 	}
 }
 
@@ -121,15 +178,18 @@ function limit_field_to_num(e) {
 
 function limit_field_length(field, max_len) {
 	var mLen = max_len;
-	if(field.value.length > mLen) {
+	if(field.val().length > mLen) {
 		field.value = field.value.substring(0, mLen);
 	}
 }
 
 function validate_min_length(field, len) {
-	if(field.length < len) {
-		alert("please enter a name longer than " + field.val());
+	var myLen = len;
+	if(field.val().length < myLen) {
+		return false;
+	//	alert("please enter a name longer than " + field.val());
 	}
+	return true;
 }
 
 function validateEmail(email)
