@@ -1,7 +1,31 @@
-function validate() {
+function Validator(form_id) {
+	//onSubmit="return validate()" 
+	this.formToValidate = $("#"+form_id);
+	this.emailArray = new Array();
+	this.addValidation = add_validation;
+	this.validate = validate_me;
+	
+	var validator_instance = this;
+	this.formToValidate.submit(function() {
+		//now search through email array to see if any don't match
+		var fn;
+		var fv;
+		for(var i=0; i <= validator_instance.emailArray.length-1; i++) {
+			fn = "#" + validator_instance.emailArray[i];
+			fv = $(fn).val();
+			 if(!validateEmail(fv)){
+			 			 alert("please enter valid email");
+	 		 }
+		}
+	});
+}
+
+function validate_me() {
 	//see http://www.javascriptkit.com/javatutors/javascriptkey3.shtml
 	//http://api.jquery.com/attr/
-		
+	alert("ok")
+	alert("firts ", this.emailArray)
+	
 	if(!validateEmail(email_field.val())){
 		alert("please enter valid email");
 	}
@@ -27,6 +51,12 @@ function set_char_limit(field, is_alpha, is_num) {
 	}
 }
 
+Object.prototype.getName = function() { 
+   var funcNameRegex = /function (.{1,})\(/;
+   var results = (funcNameRegex).exec((this).constructor.toString());
+   return (results && results.length > 1) ? results[1] : "";
+};
+
 function add_validation(field, type, max_len) {
 	if(!field) {
 		alert("invalid field");
@@ -47,6 +77,14 @@ function add_validation(field, type, max_len) {
 		case "is_num":
 			set_char_limit(field, false, true);
 			break;
+			
+		case "email":
+			//just push the name of the field
+			this.emailArray.push(field.attr("id"));
+			// alert("field attr: " + push_me)
+			// 			alert("firts! " + this.emailArray[0])
+			//alert("this: " + this.getName())
+			break;
 	}
 }
 
@@ -59,10 +97,6 @@ function key_up_listener(field, max_len) {
 	if(mLen>0) {
 		limit_field_length(field, mLen);
 	}
-}
-
-function limit_field_to_alpha(field) {
-	
 }
 
 function limit_field_to_num(e) {

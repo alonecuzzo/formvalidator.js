@@ -1,6 +1,8 @@
 function init() {
-	add_validation($("#firstname"), "is_num"); 
-	add_validation($("#firstname"), "max_len", 3);
-	add_validation($("#lastname"), "max_len", 8);
+	var validator = new Validator("myform");
+	validator.addValidation($("#firstname"), "is_num"); 
+	validator.addValidation($("#firstname"), "max_len", 3);
+	validator.addValidation($("#lastname"), "max_len", 8);
+	validator.addValidation($("#email"), "email");
 }
 
