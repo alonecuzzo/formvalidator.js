@@ -1,40 +1,10 @@
 function validate() {
-	var min_len = 3;
-	
-	var first_name_field = $("#firstname");
-	var last_name_field = $("#lastname");
-	var email_field = $("#email");
-	var key_up_observers = new Array();
-	
 	//see http://www.javascriptkit.com/javatutors/javascriptkey3.shtml
 	//http://api.jquery.com/attr/
-	
-	
-	//alert("lulz: " + email_field.val())
-	//array of fields that need
-	var min_length_fields = new Array(first_name_field, last_name_field);
-	
-	for(var i=0; i<=min_length_fields.length-1;i++) {
-		validate_min_length(min_length_fields[i], min_len);
-	}
-	
+		
 	if(!validateEmail(email_field.val())){
 		alert("please enter valid email");
 	}
-}
-
-function addit(){
-	var first_name_field = $("#firstname");
-	first_name_field.attr("onkeyup", "return key_up_listener(this, 4)");
-//	just do this using jquery http://api.jquery.com/keypress/
-//	first_name_field.attr("onkeypress", "return key_down_listener(this, true, false)");
-	first_name_field.keypress(function(e){			
-		var unicode = e.charCode ? e.charCode : e.keyCode;
-		if (unicode!=8){ //if the key isn't the backspace key (which we should allow)
-			if (unicode<48||unicode>57) //if not a number
-				return false;
-		} //disable key press
-	});
 }
 
 // sets alpha/alpha character limits
@@ -79,23 +49,6 @@ function add_validation(field, type, max_len) {
 			break;
 	}
 }
-
-//
-function ValidationRule(field, desc) {
-	
-}
-
-function key_down_listener(field, isNumericOnly, isAlphaOnly) {
-	if(isNumericOnly) {			
-		if(!limit_field_to_num(field)){
-			return false;
-		} else {
-			return true;
-		}
-	} else if(isAlphaOnly) {
-		
-	}
-} 
 
 function key_up_listener(field, max_len) {
 	var mLen = max_len;
