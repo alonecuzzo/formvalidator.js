@@ -4,5 +4,6 @@ function init() {
 	validator.addValidation($("#firstname"), "max_len", 3);
 	validator.addValidation($("#lastname"), "max_len", 8);
 	validator.addValidation($("#email"), "email");
+	validator.addValidation($("#Country"), "combobox");
 }
 

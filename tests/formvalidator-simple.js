@@ -2,8 +2,8 @@ function Validator(form_id) {
 	//onSubmit="return validate()" 
 	this.formToValidate = $("#"+form_id);
 	this.emailArray = [];
+	this.comboboxArray = [];
 	this.addValidation = add_validation;
-	//this.validate = validate_me;
 	
 	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
 	//for the return function
@@ -17,6 +17,14 @@ function Validator(form_id) {
 			fv = $(fn).val();
 			 if(!validateEmail(fv)){
 			 	alert("please enter valid email");
+	 		 }
+		}
+		
+		for(var i=0; i <= validator_instance.comboboxArray.length-1; i++) {
+			fn = "#" + validator_instance.comboboxArray[i];
+			fv = $(fn).val();
+			 if(fv == ""){
+			 	alert("please enter valid combobox value");
 	 		 }
 		}
 	});
@@ -72,9 +80,10 @@ function add_validation(field, type, max_len) {
 		case "email":
 			//just push the name of the field
 			this.emailArray.push(field.attr("id"));
-			// alert("field attr: " + push_me)
-			// 			alert("firts! " + this.emailArray[0])
-			//alert("this: " + this.getName())
+			break;
+			
+		case "combobox":
+			this.comboboxArray.push(field.attr("id"));
 			break;
 	}
 }
