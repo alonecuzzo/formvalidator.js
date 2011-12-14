@@ -1,10 +1,12 @@
 function Validator(form_id) {
 	//onSubmit="return validate()" 
 	this.formToValidate = $("#"+form_id);
-	this.emailArray = new Array();
+	this.emailArray = [];
 	this.addValidation = add_validation;
-	this.validate = validate_me;
+	//this.validate = validate_me;
 	
+	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
+	//for the return function
 	var validator_instance = this;
 	this.formToValidate.submit(function() {
 		//now search through email array to see if any don't match
@@ -14,21 +16,10 @@ function Validator(form_id) {
 			fn = "#" + validator_instance.emailArray[i];
 			fv = $(fn).val();
 			 if(!validateEmail(fv)){
-			 			 alert("please enter valid email");
+			 	alert("please enter valid email");
 	 		 }
 		}
 	});
-}
-
-function validate_me() {
-	//see http://www.javascriptkit.com/javatutors/javascriptkey3.shtml
-	//http://api.jquery.com/attr/
-	alert("ok")
-	alert("firts ", this.emailArray)
-	
-	if(!validateEmail(email_field.val())){
-		alert("please enter valid email");
-	}
 }
 
 // sets alpha/alpha character limits
