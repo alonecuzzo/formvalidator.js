@@ -4,6 +4,7 @@ function Validator(form_id) {
 	this.emailArray = [];
 	this.comboboxArray = [];
 	this.addValidation = add_validation;
+	this.setAlphaNumeric = set_char_alphanumeric;
 	
 	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
 	//for the return function
@@ -48,6 +49,16 @@ function set_char_limit(field, is_alpha, is_num) {
 			 return /[a-z]/i.test(charStr);
 		});
 	}
+}
+
+function set_char_alphanumeric(field, additional_char) {
+	//allow alpha numeric and then additional chars
+	field.keypress(function(evt){
+		evt = evt || window.event;
+		var charCode = evt.keyCode || evt.which;
+		var charStr = String.fromCharCode(charCode);
+		return /^([a-zA-Z0-9_-]+)$/.test(charStr);
+	});
 }
 
 Object.prototype.getName = function() { 
