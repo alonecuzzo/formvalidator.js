@@ -71,7 +71,7 @@ Object.prototype.getName = function() {
    return (results && results.length > 1) ? results[1] : "";
 };
 
-function add_validation(field, type, max_len) {
+function add_validation(field, type, max_len, error_msg) {
 	if(!field) {
 		alert("invalid field");
 	}
@@ -94,7 +94,7 @@ function add_validation(field, type, max_len) {
 			
 		case "email":
 			field.blur(function() {
-				validator_instance.validateEmailField($(this), false);
+				validator_instance.validateEmailField($(this), false, error_msg);
 			});
 			break;
 			
@@ -105,25 +105,25 @@ function add_validation(field, type, max_len) {
 		case "required":
 		//	var validator_instance = this;
 			field.blur(function() {
-				validator_instance.validateRequiredField($(this));
+				validator_instance.validateRequiredField($(this), error_msg);
 			});
 			break;
 		
 		case "requiredEmail":
 			field.blur(function() {
-				validator_instance.validateEmailField($(this), true);
+				validator_instance.validateEmailField($(this), true, error_msg);
 			});
 			break;
 	}
 }
 
-function validate_required_field(field) {
+function validate_required_field(field, error_msg) {
 	//check required stuff
 	if(!validate_min_length(field, 1))
 	{
 		field.add().css("border", "1px solid #f00");
 		if(field.parent().parent().find(".error").val()==undefined){
-			$("<div class='error'>this is a required field</div>").appendTo(field.parent().parent());
+			$("<div class='error'>" + error_msg + "</div>").appendTo(field.parent().parent());
 		} else {
 			field.parent().parent().find(".error").show();
 		}
@@ -133,7 +133,7 @@ function validate_required_field(field) {
 	}
 }
 
-function validate_email_field(field, isReq) {
+function validate_email_field(field, isReq, error_msg) {
 	var is_req = isReq;
 	if(is_req == "true") {
 		if(!validateEmail(field.val()))
@@ -141,7 +141,7 @@ function validate_email_field(field, isReq) {
 			//alert("field is not valid email: " +field.attr('id'));
 			field.add().css("border", "1px solid #f00");
 			if(field.parent().parent().find(".error").val()==undefined){
-				$("<div class='error'>not a valid email</div>").appendTo(field.parent().parent());
+				$("<div class='error'>"+error_msg+"</div>").appendTo(field.parent().parent());
 			} else {
 				field.parent().parent().find(".error").show();
 			}
@@ -156,7 +156,7 @@ function validate_email_field(field, isReq) {
 				field.add().css("border", "1px solid #f00");
 				
 				if(field.parent().parent().find(".error").val()==undefined){
-					$("<div class='error'>not a valid email</div>").appendTo(field.parent().parent());
+					$("<div class='error'>"+error_msg+"</div>").appendTo(field.parent().parent());
 				} else {
 					field.parent().parent().find(".error").show();
 				}
