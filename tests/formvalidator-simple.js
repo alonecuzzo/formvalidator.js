@@ -27,7 +27,14 @@ function addit(){
 	var first_name_field = $("#firstname");
 	first_name_field.attr("onkeyup", "return key_up_listener(this, 4)");
 //	just do this using jquery http://api.jquery.com/keypress/
-	first_name_field.attr("onkeypress", "return key_down_listener(this, true, false)");
+//	first_name_field.attr("onkeypress", "return key_down_listener(this, true, false)");
+	first_name_field.keypress(function(e){			
+		var unicode = e.charCode ? e.charCode : e.keyCode;
+		if (unicode!=8){ //if the key isn't the backspace key (which we should allow)
+			if (unicode<48||unicode>57) //if not a number
+				return false;
+		} //disable key press
+	});
 }
 
 function add_validation(field, type, max_len) {
