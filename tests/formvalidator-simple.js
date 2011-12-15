@@ -131,32 +131,26 @@ function Invalidator(f) {
 
 //should run after every focus change to see if the button should be enabled
 function validate_entire_form() {
-//	alert('validating entire form')
 	var needed_num_valid = this.itemsToValidate.length;
 	var actual_valid_items = 0;
-	alert("need to validate: " + needed_num_valid)
 	
 	for(var i = 0; i <= this.itemsToValidate.length-1; i++) {
 		if(this.itemsToValidate[i].isValid == true) {
 			actual_valid_items += 1;
 		}
 	}
-	alert("actual: " + actual_valid_items)
 	
 	if(actual_valid_items>=needed_num_valid) {
-		//alert("valid form!");
 		$('input[type="submit"]').removeAttr('disabled');
 	}
-	//alert("validated items" + actual_valid_items)
 }
 
 function find_invalidator(field) {
 	for(var i = 0; i <= this.itemsToValidate.length-1; i++) {
 		if(this.itemsToValidate[i].field.attr("id") == field.attr("id")){
-			return true;
+			return this.itemsToValidate[i];
 		}
 	}
-	return false;
 }
 
 function validate_required_field(field, error_msg) {
@@ -182,6 +176,7 @@ function validate_required_field(field, error_msg) {
 		//is valid
 		if(this.findInvalidator(field)) {
 			this.findInvalidator(field).isValid = true;
+			//alert("checking set value: " + this.findInvalidator(field) )
 		} else {
 			alert("error: trying to valid field that doesn't existijpoiji");
 		}
