@@ -5,12 +5,14 @@ function Validator(form_id) {
 	this.formToValidate = $("#"+form_id);
 	this.emailArray = [];
 	this.comboboxArray = [];
-	this.requiredArray = [];
+	this.itemsToValidate = [];
 	this.addValidation = add_validation;
 	this.setAlphaNumeric = set_char_alphanumeric;
 	
 	this.validateRequiredField = validate_required_field;
 	this.validateEmailField = validate_email_field;
+	this.findInvalidator = find_invalidator;
+	this.validateEntireForm = validate_entire_form;
 	
 	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
 	//for the return function
@@ -81,6 +83,7 @@ function add_validation(field, type, max_len, error_msg) {
 		var mLen = max_len;
 	}
 	var validator_instance = this;
+	var inv;
 	switch(type) {
 		case "max_len":
 	          field.attr("onkeyup", "return key_up_listener(this, " + max_len + ")");
@@ -105,7 +108,8 @@ function add_validation(field, type, max_len, error_msg) {
 			break;
 		
 		case "required":
-		//	var validator_instance = this;
+			inv = new Invalidator(field);
+			this.itemsToValidate.push(inv);
 			field.blur(function() {
 				validator_instance.validateRequiredField($(this), error_msg);
 			});
@@ -119,6 +123,42 @@ function add_validation(field, type, max_len, error_msg) {
 	}
 }
 
+//just keeps track of what's valid
+function Invalidator(f) {
+	this.field = f;
+	this.isValid = false;
+}
+
+//should run after every focus change to see if the button should be enabled
+function validate_entire_form() {
+//	alert('validating entire form')
+	var needed_num_valid = this.itemsToValidate.length;
+	var actual_valid_items = 0;
+	alert("need to validate: " + needed_num_valid)
+	
+	for(var i = 0; i <= this.itemsToValidate.length-1; i++) {
+		if(this.itemsToValidate[i].isValid == true) {
+			actual_valid_items += 1;
+		}
+	}
+	alert("actual: " + actual_valid_items)
+	
+	if(actual_valid_items>=needed_num_valid) {
+		//alert("valid form!");
+		$('input[type="submit"]').removeAttr('disabled');
+	}
+	//alert("validated items" + actual_valid_items)
+}
+
+function find_invalidator(field) {
+	for(var i = 0; i <= this.itemsToValidate.length-1; i++) {
+		if(this.itemsToValidate[i].field.attr("id") == field.attr("id")){
+			return true;
+		}
+	}
+	return false;
+}
+
 function validate_required_field(field, error_msg) {
 	//check required stuff
 	if(!validate_min_length(field, 1))
@@ -129,10 +169,24 @@ function validate_required_field(field, error_msg) {
 		} else {
 			field.parent().parent().find(".error").show();
 		}
+		
+		if(this.findInvalidator(field)) {
+			this.findInvalidator(field).isValid = false;
+		} else {
+			alert("error: trying to valid field that doesn't exist");
+		}	
+		//is invalid
 	} else {
 		field.add().css("border", "");
 		field.parent().parent().find(".error").hide();
+		//is valid
+		if(this.findInvalidator(field)) {
+			this.findInvalidator(field).isValid = true;
+		} else {
+			alert("error: trying to valid field that doesn't existijpoiji");
+		}
 	}
+	this.validateEntireForm();
 }
 
 function validate_email_field(field, isReq, error_msg) {
