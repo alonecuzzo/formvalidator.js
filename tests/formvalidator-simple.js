@@ -116,6 +116,8 @@ function add_validation(field, type, max_len, error_msg) {
 			break;
 		
 		case "requiredEmail":
+			inv = new Invalidator(field);
+			this.itemsToValidate.push(inv);
 			field.blur(function() {
 				validator_instance.validateEmailField($(this), true, error_msg);
 			});
@@ -178,7 +180,7 @@ function validate_required_field(field, error_msg) {
 			this.findInvalidator(field).isValid = true;
 			//alert("checking set value: " + this.findInvalidator(field) )
 		} else {
-			alert("error: trying to valid field that doesn't existijpoiji");
+			alert("error: trying to valid field that doesn't exist");
 		}
 	}
 	this.validateEntireForm();
@@ -186,9 +188,9 @@ function validate_required_field(field, error_msg) {
 
 function validate_email_field(field, isReq, error_msg) {
 	var is_req = isReq;
-	if(is_req == "true") {
+	if(is_req == true) {
 		if(!validateEmail(field.val()))
-		{
+		{ 
 			//alert("field is not valid email: " +field.attr('id'));
 			field.add().css("border", "1px solid #f00");
 			if(field.parent().parent().find(".error").val()==undefined){
@@ -196,10 +198,24 @@ function validate_email_field(field, isReq, error_msg) {
 			} else {
 				field.parent().parent().find(".error").show();
 			}
+			
+			if(this.findInvalidator(field)) {
+				this.findInvalidator(field).isValid = false;
+			} else {
+				alert("error: trying to valid field that doesn't exist");
+			}
+			
 		} else {
 			field.add().css("border", "");
 			field.parent().parent().find(".error").hide();
+			
+			if(this.findInvalidator(field)) {
+				this.findInvalidator(field).isValid = true;
+			} else {
+				alert("error: trying to valid field that doesn't exist");
+			}
 		}
+		
 	} else {
 		if(field.val().length>=1){
 			if(!validateEmail(field.val()))
@@ -217,6 +233,8 @@ function validate_email_field(field, isReq, error_msg) {
 			}
 		}
 	}
+	
+	this.validateEntireForm();
 }
 
 function key_up_listener(field, max_len) {
