@@ -5,6 +5,7 @@ function Validator(form_id) {
 	this.formToValidate = $("#" + form_id);
 	this.radioArray = [];
 	this.itemsToValidate = [];
+	this.checkBoxArray = [];
 	this.addValidation = add_validation;
 	this.setAlphaNumeric = set_char_alphanumeric;
 	
@@ -15,8 +16,10 @@ function Validator(form_id) {
 	this.validateComboBox = validate_combo_box;
 	this.validateRadio = validate_radio;
 	this.addRadioListeners = add_radio_listeners;
+	this.validateCheckBoxes = validate_checkboxes;
 	
 	this.radioCount = 0;
+	this.checkBoxCount = 0;
 	
 	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
 	//for the return function
@@ -140,6 +143,10 @@ function add_validation(field, type, max_len, error_msg) {
 			this.radioArray.push(field);
 			validator_instance.addRadioListeners(field);
 			break;
+			
+		case "requiredCheckBox":
+			this.checkBoxArray.push(field);
+			break;
 	}
 }
 
@@ -154,6 +161,23 @@ function add_radio_listeners(f) {
 	$("input[name='" + f + "']").bind("click", function() {
 		instance_var.validateEntireForm();
 	});
+}
+
+function validate_checkboxes() {
+	var i, validator_instance=this;
+	for(i=0; i<=this.checkBoxArray.length-1;i++) {
+		$("input[name='" + this.checkBoxArray[i] + "']").each(function(){
+			if($(this).attr("checked") == "checked")
+			{
+				validator_instance.checkBoxCount += 1;
+			}
+		});
+	}
+	if(this.checkBoxCount >= this.checkBoxArray.length) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 function validate_radio() {
@@ -185,12 +209,14 @@ function validate_entire_form() {
 			actual_valid_items += 1;
 		}
 	}
-	
-	if((actual_valid_items>=needed_num_valid) && this.validateRadio() ) {
+	if((actual_valid_items>=needed_num_valid) && this.validateRadio() && this.validateCheckBoxes() ) {
 		$('input[type="submit"]').removeAttr('disabled');
 	} else {
 		$('input[type=submit]').attr('disabled', 'disabled');
 	}
+	
+	this.radioCount = 0;
+	this.checkBoxCount = 0;
 }
 
 function find_invalidator(field) {
@@ -294,7 +320,6 @@ function validate_email_field(field, isReq, error_msg) {
 			}
 		}
 	}
-	
 	this.validateEntireForm();
 }
 
@@ -320,7 +345,8 @@ function limit_field_to_num(e) {
 
 function limit_field_length(field, max_len) {
 	var mLen = max_len;
-	if(field.val().length > mLen) {
+			//alert("shortening: " + mLen + " " + field.value.length)
+	if(field.value.length > mLen) {
 		field.value = field.value.substring(0, mLen);
 	}
 }
