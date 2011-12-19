@@ -7,5 +7,8 @@ function init() {
 	validator.addValidation($("#email"), "requiredEmail", "", "insert a valid email doh");
 	validator.setAlphaNumeric($("#address"), "");
 	validator.addValidation($("#Country"), "requiredComboBox", "fill in this combobox");
+	
+	//for radio buttons just add the validation to the radio name
+	validator.addValidation("sex", "requiredRadio");
 }
 

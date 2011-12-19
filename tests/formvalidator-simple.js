@@ -2,9 +2,8 @@ function Validator(form_id) {
 	//disable submit
 	$('input[type=submit]').attr('disabled', 'disabled');
 	//onSubmit="return validate()" 
-	this.formToValidate = $("#"+form_id);
-	this.emailArray = [];
-	this.comboboxArray = [];
+	this.formToValidate = $("#" + form_id);
+	this.radioArray = [];
 	this.itemsToValidate = [];
 	this.addValidation = add_validation;
 	this.setAlphaNumeric = set_char_alphanumeric;
@@ -14,6 +13,10 @@ function Validator(form_id) {
 	this.findInvalidator = find_invalidator;
 	this.validateEntireForm = validate_entire_form;
 	this.validateComboBox = validate_combo_box;
+	this.validateRadio = validate_radio;
+	this.addRadioListeners = add_radio_listeners;
+	
+	this.radioCount = 0;
 	
 	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
 	//for the return function
@@ -131,6 +134,12 @@ function add_validation(field, type, max_len, error_msg) {
 				validator_instance.validateComboBox($(this), error_msg);
 			});
 			break;
+			
+		case "requiredRadio":
+			//if it's radio we're looking for the radio names
+			this.radioArray.push(field);
+			validator_instance.addRadioListeners(field);
+			break;
 	}
 }
 
@@ -138,6 +147,32 @@ function add_validation(field, type, max_len, error_msg) {
 function Invalidator(f) {
 	this.field = f;
 	this.isValid = false;
+}
+
+function add_radio_listeners(f) {
+	var instance_var = this;
+	$("input[name='" + f + "']").bind("click", function() {
+		instance_var.validateEntireForm();
+	});
+}
+
+function validate_radio() {
+	//scroll through all required radio names and then return true if they're all valid, false if not
+	var i, ret=false, validator_instance=this;
+	for(i=0; i<=this.radioArray.length-1; i++) {
+		//for each name, check to see that at least one radio item is pressed
+		$("input[name='" + this.radioArray[i] + "']").each(function(){
+			if($(this).attr("checked") == "checked")
+			{
+				validator_instance.radioCount += 1;
+			}
+		});
+	}
+	if(this.radioCount >= this.radioArray.length) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 //should run after every focus change to see if the button should be enabled
@@ -151,7 +186,7 @@ function validate_entire_form() {
 		}
 	}
 	
-	if(actual_valid_items>=needed_num_valid) {
+	if((actual_valid_items>=needed_num_valid) && this.validateRadio() ) {
 		$('input[type="submit"]').removeAttr('disabled');
 	} else {
 		$('input[type=submit]').attr('disabled', 'disabled');
