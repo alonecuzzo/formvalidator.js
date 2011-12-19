@@ -15,7 +15,7 @@ function Validator(form_id) {
 	this.validateEntireForm = validate_entire_form;
 	this.validateComboBox = validate_combo_box;
 	this.validateRadio = validate_radio;
-	this.addRadioListeners = add_radio_listeners;
+	this.addCheckedListeners = add_checked_listeners;
 	this.validateCheckBoxes = validate_checkboxes;
 	
 	this.radioCount = 0;
@@ -141,11 +141,12 @@ function add_validation(field, type, max_len, error_msg) {
 		case "requiredRadio":
 			//if it's radio we're looking for the radio names
 			this.radioArray.push(field);
-			validator_instance.addRadioListeners(field);
+			validator_instance.addCheckedListeners(field);
 			break;
 			
 		case "requiredCheckBox":
 			this.checkBoxArray.push(field);
+			validator_instance.addCheckedListeners(field);
 			break;
 	}
 }
@@ -156,12 +157,13 @@ function Invalidator(f) {
 	this.isValid = false;
 }
 
-function add_radio_listeners(f) {
+function add_checked_listeners(f) {
 	var instance_var = this;
 	$("input[name='" + f + "']").bind("click", function() {
 		instance_var.validateEntireForm();
 	});
 }
+
 
 function validate_checkboxes() {
 	var i, validator_instance=this;
@@ -345,7 +347,6 @@ function limit_field_to_num(e) {
 
 function limit_field_length(field, max_len) {
 	var mLen = max_len;
-			//alert("shortening: " + mLen + " " + field.value.length)
 	if(field.value.length > mLen) {
 		field.value = field.value.substring(0, mLen);
 	}

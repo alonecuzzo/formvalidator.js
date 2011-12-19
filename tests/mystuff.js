@@ -10,5 +10,6 @@ function init() {
 	
 	//for radio buttons just add the validation to the radio name
 	validator.addValidation("sex", "requiredRadio");
+	validator.addValidation("sports", "requiredCheckBox");
 }
 
