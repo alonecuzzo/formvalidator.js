@@ -5,7 +5,7 @@ function init() {
 	validator.addValidation($("#firstname"), "max_len", 3);
 	validator.addValidation($("#lastname"), "max_len", 8);
 	validator.addValidation($("#email"), "requiredEmail", "", "insert a valid email doh");
-	validator.addValidation($("#Country"), "combobox");
 	validator.setAlphaNumeric($("#address"), "");
+	validator.addValidation($("#Country"), "requiredComboBox", "fill in this combobox");
 }
 

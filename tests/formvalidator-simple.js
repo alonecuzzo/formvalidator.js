@@ -13,6 +13,7 @@ function Validator(form_id) {
 	this.validateEmailField = validate_email_field;
 	this.findInvalidator = find_invalidator;
 	this.validateEntireForm = validate_entire_form;
+	this.validateComboBox = validate_combo_box;
 	
 	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
 	//for the return function
@@ -122,6 +123,14 @@ function add_validation(field, type, max_len, error_msg) {
 				validator_instance.validateEmailField($(this), true, error_msg);
 			});
 			break;
+			
+		case "requiredComboBox":
+			inv = new Invalidator(field);
+			this.itemsToValidate.push(inv);
+			field.change(function(){
+				validator_instance.validateComboBox($(this), error_msg);
+			});
+			break;
 	}
 }
 
@@ -144,6 +153,8 @@ function validate_entire_form() {
 	
 	if(actual_valid_items>=needed_num_valid) {
 		$('input[type="submit"]').removeAttr('disabled');
+	} else {
+		$('input[type=submit]').attr('disabled', 'disabled');
 	}
 }
 
@@ -185,6 +196,21 @@ function validate_required_field(field, error_msg) {
 	}
 	this.validateEntireForm();
 }
+
+
+function validate_combo_box(field, error_msg) {
+	if(field.val() != "") {
+		//field is valid
+		this.findInvalidator(field).isValid = true;
+		
+	} else {
+		//field is invalid
+		//i don't think we need a message here since the submit button doesn't become active unless all required fields are selected
+		this.findInvalidator(field).isValid = false;
+	}
+	this.validateEntireForm();
+}
+
 
 function validate_email_field(field, isReq, error_msg) {
 	var is_req = isReq;
