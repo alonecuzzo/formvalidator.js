@@ -6,6 +6,8 @@ function Validator(form_id) {
 	this.radioArray = [];
 	this.itemsToValidate = [];
 	this.checkBoxArray = [];
+	this.minLenArray = [];
+	
 	this.addValidation = add_validation;
 	this.setAlphaNumeric = set_char_alphanumeric;
 	
@@ -20,6 +22,9 @@ function Validator(form_id) {
 	
 	this.radioCount = 0;
 	this.checkBoxCount = 0;
+	
+	this.onValidFormFunc;
+	this.formSubmitId = "";
 	
 	//there has to be a better way of doing this, just leaving it there for now as a reference to the validator object 
 	//for the return function
@@ -82,7 +87,7 @@ Object.prototype.getName = function() {
    return (results && results.length > 1) ? results[1] : "";
 };
 
-function add_validation(field, type, max_len, error_msg) {
+function add_validation(field, type, max_len, error_msg, min_len, min_len_error_msg) {
 	if(!field) {
 		alert("invalid field");
 	}
@@ -121,6 +126,14 @@ function add_validation(field, type, max_len, error_msg) {
 				validator_instance.validateRequiredField($(this), error_msg);
 			});
 			break;
+			
+		case "requiredMinLen":
+			inv = new Invalidator(field);
+			this.itemsToValidate.push(inv);
+			field.blur(function() {
+				validator_instance.validateRequiredField($(this), error_msg, min_len, min_len_error_msg);
+			});
+			break;
 		
 		case "requiredEmail":
 			inv = new Invalidator(field);
@@ -157,13 +170,13 @@ function Invalidator(f) {
 	this.isValid = false;
 }
 
+
 function add_checked_listeners(f) {
 	var instance_var = this;
 	$("input[name='" + f + "']").bind("click", function() {
 		instance_var.validateEntireForm();
 	});
 }
-
 
 function validate_checkboxes() {
 	var i, validator_instance=this;
@@ -205,20 +218,43 @@ function validate_radio() {
 function validate_entire_form() {
 	var needed_num_valid = this.itemsToValidate.length;
 	var actual_valid_items = 0;
-	
+
 	for(var i = 0; i <= this.itemsToValidate.length-1; i++) {
 		if(this.itemsToValidate[i].isValid == true) {
 			actual_valid_items += 1;
 		}
 	}
-	if((actual_valid_items>=needed_num_valid) && this.validateRadio() && this.validateCheckBoxes() ) {
-		$('input[type="submit"]').removeAttr('disabled');
+	if((actual_valid_items>=needed_num_valid) && this.validateRadio() && this.validateCheckBoxes()) {
+		 this.onValidFormFunc(this.formSubmitId);
 	} else {
 		$('input[type=submit]').attr('disabled', 'disabled');
 	}
 	
 	this.radioCount = 0;
 	this.checkBoxCount = 0;
+}
+
+function validate_all_min_len() {
+	var i, inv=0;
+	for(i=0; i<=this.minLenArray.length-1; i++) {
+		if(!validate_min_len(this.minLenArray[i])) {
+			this.minLenArray[i].isValid = false;
+			this.minLenArray[i].displayMinInvError();
+			inv++;
+		} else {
+			this.minLenArray[i].hideMinInvError();
+			this.minLenArray[i].isValid = true;
+		}
+	}
+	return inv;
+}
+
+function validate_min_len(minv) {
+	var minLen = minv.minLength, retvalue=true;
+	if((minv.field.val().length < minLen)) {
+		retvalue = false;
+	} 
+	return retvalue;
 }
 
 function find_invalidator(field) {
@@ -229,15 +265,28 @@ function find_invalidator(field) {
 	}
 }
 
-function validate_required_field(field, error_msg) {
+function validate_required_field(field, error_msg, ml, ml_error) {
+	var minLength = ml;	
+	if(!minLength) {
+		minLength = 1;
+	}
 	//check required stuff
-	if(!validate_min_length(field, 1))
+	if(!validate_min_length(field, minLength))
 	{
-		field.add().css("border", "1px solid #f00");
-		if(field.parent().parent().find(".error").val()==undefined){
-			$("<div class='error'>" + error_msg + "</div>").appendTo(field.parent().parent());
+		var e;
+		
+		if(minLength > 1) {
+			e = ml_error;
 		} else {
-			field.parent().parent().find(".error").show();
+			e = error_msg;
+		}
+		
+		field.add().css("border", "1px solid #f00");
+		if(field.parent().find(".error").val()==undefined){
+			$("<div class='error'>" + e + "</div>").appendTo(field.parent());
+		} else {
+			field.parent().find(".error").text(e);
+			field.parent().find(".error").show();
 		}
 		
 		if(this.findInvalidator(field)) {
@@ -248,7 +297,7 @@ function validate_required_field(field, error_msg) {
 		//is invalid
 	} else {
 		field.add().css("border", "");
-		field.parent().parent().find(".error").hide();
+		field.parent().find(".error").hide();
 		//is valid
 		if(this.findInvalidator(field)) {
 			this.findInvalidator(field).isValid = true;
@@ -282,10 +331,10 @@ function validate_email_field(field, isReq, error_msg) {
 		{ 
 			//alert("field is not valid email: " +field.attr('id'));
 			field.add().css("border", "1px solid #f00");
-			if(field.parent().parent().find(".error").val()==undefined){
-				$("<div class='error'>"+error_msg+"</div>").appendTo(field.parent().parent());
+			if(field.parent().find(".error").val()==undefined){
+				$("<div class='error'>"+error_msg+"</div>").appendTo(field.parent());
 			} else {
-				field.parent().parent().find(".error").show();
+				field.parent().find(".error").show();
 			}
 			
 			if(this.findInvalidator(field)) {
@@ -296,7 +345,7 @@ function validate_email_field(field, isReq, error_msg) {
 			
 		} else {
 			field.add().css("border", "");
-			field.parent().parent().find(".error").hide();
+			field.parent().find(".error").hide();
 			
 			if(this.findInvalidator(field)) {
 				this.findInvalidator(field).isValid = true;
@@ -311,14 +360,14 @@ function validate_email_field(field, isReq, error_msg) {
 			{
 				field.add().css("border", "1px solid #f00");
 				
-				if(field.parent().parent().find(".error").val()==undefined){
-					$("<div class='error'>"+error_msg+"</div>").appendTo(field.parent().parent());
+				if(field.parent().find(".error").val()==undefined){
+					$("<div class='error'>"+error_msg+"</div>").appendTo(field.parent());
 				} else {
-					field.parent().parent().find(".error").show();
+					field.parent().find(".error").show();
 				}
 			} else {
 				field.add().css("border", "");
-				field.parent().parent().find(".error").hide();
+				field.parent().find(".error").hide();
 			}
 		}
 	}
